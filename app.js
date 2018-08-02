@@ -22,20 +22,21 @@ client.ping({
   });
 
 
-app.get('/appflyermonitorstats/timeline', function (req, res) {
+app.get('/vungle/ads/timeline', function (req, res) {
     client.search({
-        index: 'appflyermonitorstats',
-        type: 'appflyermonitorstats',
+        index: 'vungle',
+        type: 'ads',
         body: {
-            query: {
-                range : {
-                    stat_date : {
-                        gte : req.query.from ? req.query.from : "2018-07-27",
-                        lte : req.query.to ? req.query.to : "2018-07-27"
-                    }
-                }
-            }
-        }
+          query: {
+                      range : {
+                          time_hour : {
+                              gte : req.query.from ? req.query.from : "2018-01-01",
+                              lte : req.query.to ? req.query.to :"2019-01-28"
+                          }
+                      }
+                  }
+          
+      }
       }).then(function(data){
 
         var items = []
