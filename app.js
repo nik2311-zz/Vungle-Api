@@ -23,14 +23,19 @@ client.ping({
 
 
 app.get('/vungle/ads/timeline', function (req, res) {
+  console.log(req.query.metrics)
+  var fields = null
+  if(req.query.metrics){
+    fields=req.query.metrics.split(',')
+  }
+  else{
+    fields=["time_hour","Installs","Advertiser Spend","Impressions","Completes","Third Quartile Video","Clicks","Second Quartile Video","Unique Devices","Views","Zero Quartile Video","First Quartile Video","CTR","Completion Rate","Conversion Rate","Spend eCPI"]
+  }
     client.search({
         index: 'vungle',
         type: 'ads',
         body: {
-              _source: [
-                          "Clicks",
-                          "time_hour"
-                        ],
+              _source: fields,
               query: {
                 range: {
                   time_hour: {
