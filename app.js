@@ -27,18 +27,20 @@ app.get('/vungle/ads/timeline', function (req, res) {
         index: 'vungle',
         type: 'ads',
         body: {
-          query: {
-                      range : {
-                          time_hour : {
-                              gte : req.query.from ? req.query.from : "2018-01-01",
-                              lte : req.query.to ? req.query.to :"2019-01-28"
-                          }
-                      }
+              _source: [
+                          "Clicks",
+                          "time_hour"
+                        ],
+              query: {
+                range: {
+                  time_hour: {
+                    gte : req.query.from ? req.query.from : "2018-01-01",
+                    lte : req.query.to ? req.query.to :"2019-01-28",
+                    }
                   }
-          
-      }
+              }
+            }
       }).then(function(data){
-
         var items = []
         for (const tweet of data.hits.hits) {
             items.push(tweet._source)
@@ -52,4 +54,3 @@ app.get('/vungle/ads/timeline', function (req, res) {
   })
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
-
