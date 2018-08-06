@@ -53,22 +53,14 @@ app.get('/vungle/ads/timeline', function (req, res) {
         for (const item of data.hits.hits) {
             var time_hour = item._source['time_hour']
             var src = item._source
-            if(grouped[time_hour]){
-
-            }else{
-              grouped[time_hour] = {}
-            }
-            for(var f of fields){
-              if(f != "time_hour"){
-                if(grouped[time_hour][f]){
-                  grouped[time_hour][f].push(src[f])
+            delete src["time_hour"]
+            Object.keys(src).forEach(function(f) {
+              if(grouped[f]){
+                grouped[f].push([time_hour,src[f]])
+                }else{
+                  grouped[f] = []
                 }
-                else{
-                  grouped[time_hour][f]=[src[f]]
-                }
-              }
-              
-            }
+            });
           }
     
           res.send(grouped)
