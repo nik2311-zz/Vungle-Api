@@ -38,6 +38,8 @@ app.get('/vungle/ads/timeline', function (req, res) {
         type: 'ads',
         body: {
               _source: fields,
+              from : 0, size : 1000,
+              sort:[{"time_hour":{"order":"asc"}}],
               query: {
                 range: {
                   time_hour: {
