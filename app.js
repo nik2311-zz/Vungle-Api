@@ -4,8 +4,9 @@ const app = express()
 
 
 var elasticsearch = require('elasticsearch');
-const es_host = process.env.ES_HOST
+const es_host = process.env.ES_HOST || '10.0.3.178:29200'
 
+console.log(es_host)
 var client = new elasticsearch.Client({
   host: es_host
 });
@@ -15,7 +16,7 @@ client.ping({
     requestTimeout: 1000
   }, function (error) {
     if (error) {
-      console.trace('elasticsearch cluster is down!');
+      console.trace('elasticsearch cluster is down!',error);
     } else {
       console.log('All is well');
     }
@@ -27,6 +28,7 @@ app.get('/vungle/ads/timeline', function (req, res) {
   var fields = null
   if(req.query.metrics){
     fields=req.query.metrics.split(',')
+    fields.push("time_hour")
   }
   else{
     fields=["time_hour","Installs","Advertiser Spend","Impressions","Completes","Third Quartile Video","Clicks","Second Quartile Video","Unique Devices","Views","Zero Quartile Video","First Quartile Video","CTR","Completion Rate","Conversion Rate","Spend eCPI"]
@@ -47,11 +49,29 @@ app.get('/vungle/ads/timeline', function (req, res) {
             }
       }).then(function(data){
         var items = []
-        for (const tweet of data.hits.hits) {
-            items.push(tweet._source)
+        var grouped={}
+        for (const item of data.hits.hits) {
+            var time_hour = item._source['time_hour']
+            var src = item._source
+            if(grouped[time_hour]){
+
+            }else{
+              grouped[time_hour] = {}
+            }
+            for(var f of fields){
+              if(f != "time_hour"){
+                if(grouped[time_hour][f]){
+                  grouped[time_hour][f].push(src[f])
+                }
+                else{
+                  grouped[time_hour][f]=[src[f]]
+                }
+              }
+              
+            }
           }
     
-          res.send(items)
+          res.send(grouped)
 
       },function(error){})
        
