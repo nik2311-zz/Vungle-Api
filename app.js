@@ -104,11 +104,14 @@ app.get('/vungle/ads/dimensions', function (req, res) {
       }
     }
   }
-
+  
+  var agg_func = req.query.agg || "sum"
   fields.forEach(function (f) {
      if(f != "time_hour"){
       var agg_name = f
-      es_query.body.aggs[agg_name]={"sum":{"field":f}}
+      //es_query.body.aggs[agg_name]={"avg":{"field":f}}
+      es_query.body.aggs[agg_name]={}
+      es_query.body.aggs[agg_name][agg_func] = {"field":f}
      }
 })
 
