@@ -4,7 +4,7 @@ const app = express()
 
 
 var elasticsearch = require('elasticsearch');
-const es_host = process.env.ES_HOST || 'ec2-54-218-19-172.us-west-2.compute.amazonaws.com:29200'
+const es_host = 'ec2-54-218-19-172.us-west-2.compute.amazonaws.com:29200'
 
 console.log(es_host)
 var client = new elasticsearch.Client({
@@ -107,7 +107,7 @@ app.get('/vungle/ads/dimensions', function (req, res) {
 
   fields.forEach(function (f) {
      if(f != "time_hour"){
-      var agg_name = `total_${f}`
+      var agg_name = f
       es_query.body.aggs[agg_name]={"sum":{"field":f}}
      }
 })
