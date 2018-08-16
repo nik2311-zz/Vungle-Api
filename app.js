@@ -488,7 +488,7 @@ app.get('/vungle/adspend/', function (req, res) {
     })
     out['platform']=buckets
     buckets={}
-    res.send(groups)
+    res.send(out)
 
   }, function (error) { })
 
