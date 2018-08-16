@@ -133,4 +133,194 @@ app.get('/vungle/ads/dimensions', function (req, res) {
 
 })
 
+
+
+
+
+
+app.get('/vungle/adspend/platform/', function (req, res) {
+  client.search({
+  "index": 'vungle_adid_dimenstion',
+  "body":{
+    query: {
+        range: {
+          time_hour: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      },
+    "aggregations": {
+      "advertiser_spend": {
+         "aggregations": {
+            "ad_spend": {
+               "sum": {
+                  "field": "Advertiser Spend"
+               }
+            }
+         },
+         "terms": {
+            "field": "Platform.keyword",
+            "order": {
+               "ad_spend": "desc"
+            }
+         }
+      }
+   }}
+   ,
+   "size": 0
+}).then(function (data) {
+    console.log(data)
+    let buckets = data.aggregations.advertiser_spend.buckets
+    let groups = {}
+    buckets.forEach(function(item){
+      groups[item.key]=item.ad_spend.value
+    })
+    res.send(groups)
+
+  }, function (error) { })
+
+
+})
+
+
+
+
+app.get('/vungle/adspend/campaign/', function (req, res) {
+  client.search({
+  "index": 'vungle_ad_campaign',
+  "body":{
+    query: {
+        range: {
+          time_hour: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      },
+    "aggregations": {
+      "advertiser_spend": {
+         "aggregations": {
+            "ad_spend": {
+               "sum": {
+                  "field": "Advertiser Spend"
+               }
+            }
+         },
+         "terms": {
+            "field": "Campaign Name.keyword",
+            "order": {
+               "ad_spend": "desc"
+            }
+         }
+      }
+   }}
+   ,
+   "size": 0
+}).then(function (data) {
+    console.log(data)
+    let buckets = data.aggregations.advertiser_spend.buckets
+    let groups = {}
+    buckets.forEach(function(item){
+      groups[item.key]=item.ad_spend.value
+    })
+    res.send(groups)
+
+  }, function (error) { })
+
+
+})
+
+
+
+app.get('/vungle/adspend/advertiserid/', function (req, res) {
+  client.search({
+  "index": 'vungle_adid_dimenstion',
+  "body":{
+    query: {
+        range: {
+          time_hour: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      },
+    "aggregations": {
+      "advertiser_spend": {
+         "aggregations": {
+            "ad_spend": {
+               "sum": {
+                  "field": "Advertiser Spend"
+               }
+            }
+         },
+         "terms": {
+            "field": "Advertiser ID.keyword",
+            "order": {
+               "ad_spend": "desc"
+            }
+         }
+      }
+   }}
+   ,
+   "size": 0
+}).then(function (data) {
+    console.log(data)
+    let buckets = data.aggregations.advertiser_spend.buckets
+    let groups = {}
+    buckets.forEach(function(item){
+      groups[item.key]=item.ad_spend.value
+    })
+    res.send(groups)
+
+  }, function (error) { })
+
+
+})
+
+app.get('/vungle/adspend/creativename/', function (req, res) {
+  client.search({
+  "index": 'vungle_ad_creative',
+  "body":{
+    query: {
+        range: {
+          time_hour: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      },
+    "aggregations": {
+      "advertiser_spend": {
+         "aggregations": {
+            "ad_spend": {
+               "sum": {
+                  "field": "Advertiser Spend"
+               }
+            }
+         },
+         "terms": {
+            "field": "Creatve Name.keyword",
+            "order": {
+               "ad_spend": "desc"
+            }
+         }
+      }
+   }}
+   ,
+   "size": 0
+}).then(function (data) {
+    console.log(data)
+    let buckets = data.aggregations.advertiser_spend.buckets
+    let groups = {}
+    buckets.forEach(function(item){
+      groups[item.key]=item.ad_spend.value
+    })
+    res.send(groups)
+
+  }, function (error) { })
+
+
+})
+
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
