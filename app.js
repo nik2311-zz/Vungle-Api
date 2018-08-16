@@ -369,8 +369,8 @@ app.get('/vungle/adspend/', function (req, res) {
     buckets.forEach(function(item){
       groups[item.key]=item.ad_spend.value
     })
-    out['creativename']=buckets
-    buckets={}
+    out['creativename']=groups
+    groups={}
     client.search({
   "index": 'vungle_adid_dimenstion',
   "body":{
@@ -408,8 +408,8 @@ app.get('/vungle/adspend/', function (req, res) {
     buckets.forEach(function(item){
       groups[item.key]=item.ad_spend.value
     })
-    out['advertiserid']=buckets
-    buckets={}
+    out['advertiserid']=groups
+    groups={}
     client.search({
   "index": 'vungle_ad_campaign',
   "body":{
@@ -447,8 +447,8 @@ app.get('/vungle/adspend/', function (req, res) {
     buckets.forEach(function(item){
       groups[item.key]=item.ad_spend.value
     })
-    out['campaign']=buckets
-    buckets={}
+    out['campaign']=groups
+    groups={}
     client.search({
   "index": 'vungle_adid_dimenstion',
   "body":{
@@ -486,8 +486,8 @@ app.get('/vungle/adspend/', function (req, res) {
     buckets.forEach(function(item){
       groups[item.key]=item.ad_spend.value
     })
-    out['platform']=buckets
-    buckets={}
+    out['platform']=groups
+    groups={}
     res.send(out)
 
   }, function (error) { })
