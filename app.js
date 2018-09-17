@@ -559,28 +559,55 @@ app.get('/vungle/appflyer/dimensions', function (req, res) {
 
 })
 
+
+
+app.get('/vungle/appflyer/timeline', function (req, res) {
+  console.log(req.query.metrics)
+  var fields = null
+  if (req.query.metrics) {
+    fields = req.query.metrics.split(',')
+    fields.push("stat_date")
+  }
+  else {
+    fields = ["stat_date","Sessions","Loyal Users","Loyal Users/Installs","Total Revenue","ARPU","email_unique_viewers","email_event_counters","email_sales_usd","facebook_unique_viewers","facebook_event_counters","facebook_sales_usd","phone_unique_viewers","phone_event_counters","phone_sales_usd","unique_viewers","event_counters","sales_usd"]
+  }
+  client.search({
+    index: 'appflyer',
+    type: 'appflyer',
+    body: {
+      _source: fields,
+      from: 0, size: 10000,
+      sort: [{ "stat_date": { "order": "asc" } }],
+      query: {
+        range: {
+          stat_date: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      }
+    }
+  }).then(function (data) {
+    var items = []
+    var grouped = {}
+    for (const item of data.hits.hits) {
+      var time_hour = item._source['stat_date']
+      var src = item._source
+      delete src["stat_date"]
+      Object.keys(src).forEach(function (f) {
+        if (grouped[f]) {
+          grouped[f].push([time_hour, src[f]])
+        } else {
+          grouped[f] = []
+        }
+      });
+    }
+
+    res.send(grouped)
+
+  }, function (error) { })
+
+
+})
+
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
-
-
-
-
-
-
-"Installs",
-"Sessions",
-"Loyal Users",
-"Loyal Users/Installs",
-"Total Revenue",
-"ARPU",
-"email_unique_viewers",
-"email_event_counters",
-"email_sales_usd",
-"facebook_unique_viewers",
-"facebook_event_counters",
-"facebook_sales_usd",
-"phone_unique_viewers",
-"phone_event_counters",
-"phone_sales_usd",
-"unique_viewers",
-"event_counters",
-"sales_usd"
