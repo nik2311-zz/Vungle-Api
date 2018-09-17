@@ -17,7 +17,7 @@ var client = new elasticsearch.Client({
 
 client.ping({
   // ping usually has a 3000ms timeout
-  requestTimeout: 1000
+  requestTimeout: 5000
 }, function (error) {
   if (error) {
     console.trace('elasticsearch cluster is down!', error);
@@ -501,4 +501,86 @@ app.get('/vungle/adspend/', function (req, res) {
 
 })
 
+
+
+
+
+app.get('/vungle/appflyer/dimensions', function (req, res) {
+  var fields = null
+  if (req.query.dimensions) {
+    fields = req.query.dimensions.split(',')
+    fields.push("time_hour")
+  }
+  else {
+    fields = ["stat_date","Sessions","Loyal Users","Loyal Users/Installs","Total Revenue","ARPU","email_unique_viewers","email_event_counters","email_sales_usd","facebook_unique_viewers","facebook_event_counters","facebook_sales_usd","phone_unique_viewers","phone_event_counters","phone_sales_usd","unique_viewers","event_counters","sales_usd"]
+  }
+
+  var es_query = {
+    index: 'appflyer',
+    type: 'appflyer',
+    body: {
+      _source: fields,
+      size: 0,
+      query: {
+        range: {
+          stat_date: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      },
+      aggs: {
+        
+      }
+    }
+  }
+  
+  var agg_func = req.query.agg || "sum"
+  fields.forEach(function (f) {
+     if(f != "stat_date"){
+      var agg_name = f
+      //es_query.body.aggs[agg_name]={"avg":{"field":f}}
+      es_query.body.aggs[agg_name]={}
+      es_query.body.aggs[agg_name][agg_func] = {"field":f}
+     }
+})
+
+    client.search(es_query).then(function (data) {
+      res.send(data.aggregations)
+
+    }, function (error) { 
+      res.send(error)
+    })
+
+
+  
+
+
+
+})
+
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
+
+
+
+
+
+
+"Installs",
+"Sessions",
+"Loyal Users",
+"Loyal Users/Installs",
+"Total Revenue",
+"ARPU",
+"email_unique_viewers",
+"email_event_counters",
+"email_sales_usd",
+"facebook_unique_viewers",
+"facebook_event_counters",
+"facebook_sales_usd",
+"phone_unique_viewers",
+"phone_event_counters",
+"phone_sales_usd",
+"unique_viewers",
+"event_counters",
+"sales_usd"
