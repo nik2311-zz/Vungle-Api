@@ -509,7 +509,7 @@ app.get('/appsflyer/dimensions', function (req, res) {
   var fields = null
   if (req.query.dimensions) {
     fields = req.query.dimensions.split(',')
-    fields.push("time_hour")
+    fields.push("stat_date")
   }
   else {
     fields = ["stat_date","Sessions","Loyal Users","Loyal Users/Installs","Total Revenue","ARPU","email_unique_viewers","email_event_counters","email_sales_usd","facebook_unique_viewers","facebook_event_counters","facebook_sales_usd","phone_unique_viewers","phone_event_counters","phone_sales_usd","unique_viewers","event_counters","sales_usd"]
