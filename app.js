@@ -505,7 +505,7 @@ app.get('/vungle/adspend/', function (req, res) {
 
 
 
-app.get('/vungle/appflyer/dimensions', function (req, res) {
+app.get('/google/dimensions', function (req, res) {
   var fields = null
   if (req.query.dimensions) {
     fields = req.query.dimensions.split(',')
@@ -561,7 +561,7 @@ app.get('/vungle/appflyer/dimensions', function (req, res) {
 
 
 
-app.get('/vungle/appflyer/timeline', function (req, res) {
+app.get('/google/timeline', function (req, res) {
   console.log(req.query.metrics)
   var fields = null
   if (req.query.metrics) {
