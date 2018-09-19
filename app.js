@@ -62,6 +62,7 @@ app.get('/vungle/ads/timeline', function (req, res) {
       delete src["time_hour"]
       Object.keys(src).forEach(function (f) {
         if (grouped[f]) {
+          time_hour=new Date(time_hour).valueOf()
           grouped[f].push([time_hour, src[f]])
         } else {
           grouped[f] = []
