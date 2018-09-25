@@ -612,4 +612,118 @@ app.get('/appsflyer/timeline', function (req, res) {
 
 })
 
+
+
+
+app.get('/google/timeline', function (req, res) {
+  console.log(req.query.metrics)
+  var fields = null
+  if (req.query.metrics) {
+    fields = req.query.metrics.split(',')
+    fields.push("Day")
+  }
+  else {
+    fields = ['Ad group', 'Ad group state', 'Campaign', 'Campaign type',
+    'Campaign subtype', 'Day', 'Currency', 'Clicks', 'Impressions', 'CTR',
+    'Avg. CPC', 'Cost', 'Conversions', 'View-through conv.', 'Cost / conv.',
+    'Conv. rate']
+  }
+  client.search({
+    index: 'google_ad_group',
+    type: 'google_ad_group',
+    body: {
+      _source: fields,
+      from: 0, size: 10000,
+      sort: [{ "Day": { "order": "asc" } }],
+      query: {
+        range: {
+          Day: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      }
+    }
+  }).then(function (data) {
+    var items = []
+    var grouped = {}
+    for (const item of data.hits.hits) {
+      var time_hour = item._source['Day']
+      var src = item._source
+      delete src["Day"]
+      Object.keys(src).forEach(function (f) {
+        if (grouped[f]) {
+          time_hour = new Date(time_hour).valueOf()
+          grouped[f].push([time_hour, src[f]])
+        } else {
+          grouped[f] = []
+        }
+      });
+    }
+
+    res.send(grouped)
+
+  }, function (error) { })
+
+
+})
+
+
+
+app.get('/google/dimensions', function (req, res) {
+  var fields = null
+  if (req.query.dimensions) {
+    fields = req.query.dimensions.split(',')
+    fields.push("Day")
+  }
+  else {
+    fields = fields = ['Clicks', 'Impressions', 'CTR',
+    'Avg. CPC', 'Cost', 'Conversions', 'View-through conv.', 'Cost / conv.',
+    'Conv. rate']
+  }
+
+  var es_query = {
+    index: 'google_ad_group',
+    type: 'google_ad_group',
+    body: {
+      _source: fields,
+      size: 0,
+      query: {
+        range: {
+          Day: {
+            gte: req.query.from ? req.query.from : "2018-01-01",
+            lte: req.query.to ? req.query.to : "2019-01-28",
+          }
+        }
+      },
+      aggs: {
+        
+      }
+    }
+  }
+  
+  var agg_func = req.query.agg || "sum"
+  fields.forEach(function (f) {
+     if(f != "Day"){
+      var agg_name = f
+      //es_query.body.aggs[agg_name]={"avg":{"field":f}}
+      es_query.body.aggs[agg_name]={}
+      es_query.body.aggs[agg_name][agg_func] = {"field":f}
+     }
+})
+
+    client.search(es_query).then(function (data) {
+      res.send(data.aggregations)
+
+    }, function (error) { 
+      res.send(error)
+    })
+
+
+  
+
+
+
+})
+
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
