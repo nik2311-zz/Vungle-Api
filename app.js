@@ -613,13 +613,28 @@ app.get('/appsflyer/timeline', function (req, res) {
 })
 
 
+GOOGLE_FIELD_MAP = {
 
+  'Cost / conv.':'CostConv',
+  'Avg. CPC':'AvgCPC',
+  'Conv. rate':'ConvRate',
+  'View-through conv.':'ViewThroughConv',
+  'CostConv':'Cost / conv.',
+  'AvgCPC':'Avg. CPC',
+  'ConvRate':'Conv. rate',
+  'ViewThroughConv':'View-through conv.'
+
+}
 
 app.get('/google/timeline', function (req, res) {
   console.log(req.query.metrics)
   var fields = null
   if (req.query.metrics) {
-    fields = req.query.metrics.split(',')
+    fields = []
+    req.query.metrics.split(',').forEach(function (f){
+      var nf=GOOGLE_FIELD_MAP[f]|| f
+      fields.push(nf)
+    })
     fields.push("Day")
   }
   else {
@@ -652,11 +667,12 @@ app.get('/google/timeline', function (req, res) {
       var src = item._source
       delete src["Day"]
       Object.keys(src).forEach(function (f) {
-        if (grouped[f]) {
+        var nf=GOOGLE_FIELD_MAP[f]|| f
+        if (grouped[nf]) {
           time_hour = new Date(time_hour).valueOf()
-          grouped[f].push([time_hour, src[f]])
+          grouped[nf].push([time_hour, src[f]])
         } else {
-          grouped[f] = []
+          grouped[nf] = []
         }
       });
     }
