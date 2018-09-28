@@ -689,7 +689,11 @@ app.get('/google/timeline', function (req, res) {
 app.get('/google/dimensions', function (req, res) {
   var fields = null
   if (req.query.dimensions) {
-    fields = req.query.dimensions.split(',')
+    fields = []
+    req.query.dimensions.split(',').forEach(function (f){
+      var nf=GOOGLE_FIELD_MAP[f]|| f
+      fields.push(nf)
+    })
     fields.push("Day")
   }
   else {
@@ -729,7 +733,13 @@ app.get('/google/dimensions', function (req, res) {
 })
 
     client.search(es_query).then(function (data) {
-      res.send(data.aggregations)
+      response = {}
+      Object.keys(data.aggregations).forEach(function(f){
+        console.log(f)
+        var nf=GOOGLE_FIELD_MAP[f]|| f
+        response[nf] = data.aggregations[f]
+      })
+      res.send(response)
 
     }, function (error) { 
       res.send(error)
