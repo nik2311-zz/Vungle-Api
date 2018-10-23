@@ -621,8 +621,8 @@ GOOGLE_FIELD_MAP = {
   'View-through conv.':'ViewThroughConv',
   'CostConv':'Cost / conv.',
   'AvgCPC':'Avg. CPC',
-  'ConvRate':'Conv. rate',
-  'ViewThroughConv':'View-through conv.'
+  'ConvRate':'Conv. rate'
+  // 'ViewThroughConv':'View-through conv.'
 
 }
 
@@ -640,7 +640,7 @@ app.get('/google/timeline', function (req, res) {
   else {
     fields = ['Ad group', 'Ad group state', 'Campaign', 'Campaign type',
     'Campaign subtype', 'Day', 'Currency', 'Clicks', 'Impressions', 'CTR',
-    'Avg. CPC', 'Cost', 'Conversions', 'View-through conv.', 'Cost / conv.',
+    'Avg. CPC', 'Cost', 'Conversions', 'Cost / conv.',
     'Conv. rate']
   }
   client.search({
@@ -698,7 +698,7 @@ app.get('/google/dimensions', function (req, res) {
   }
   else {
     fields = fields = ['Clicks', 'Impressions', 'CTR',
-    'Avg. CPC', 'Cost', 'Conversions', 'View-through conv.', 'Cost / conv.',
+    'Avg. CPC', 'Cost', 'Conversions', 'Cost / conv.',
     'Conv. rate']
   }
 
