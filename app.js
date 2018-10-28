@@ -621,10 +621,39 @@ GOOGLE_FIELD_MAP = {
   'View-through conv.':'ViewThroughConv',
   'CostConv':'Cost / conv.',
   'AvgCPC':'Avg. CPC',
-  'ConvRate':'Conv. rate'
+  // 'ConvRate':'Conv. rate'
   // 'ViewThroughConv':'View-through conv.'
 
 }
+
+var add_all = function(all_data,dateepoch,fielname){ return all_data[fielname][dateepoch].reduce(function(a,b){ return a+b})}
+
+var ctr_group_by_day = function(all_data,dateepoch){
+                    return all_data['Clicks'][dateepoch].reduce(function(a,b){ return a+b})/all_data['Impressions'][dateepoch].reduce(function(a,b){ return a+b})
+}
+
+var ctr_per_conv_group_by_day = function(all_data,dateepoch){
+  return all_data['Cost'][dateepoch].reduce(function(a,b){ return a+b})/all_data['Conversions'][dateepoch].reduce(function(a,b){ return a+b})
+}
+
+var all_string = function(item){ return "all"}
+
+var currency_string = function(item){ return "USD"}
+
+GROUP_BY = {'CTR':ctr_group_by_day,
+  'Impressions':add_all,
+  'CostConv':ctr_per_conv_group_by_day,
+  'Cost':add_all,
+  'Ad group state':all_string,
+  'Campaign':all_string,
+  'AvgCPC':add_all,
+  'Conversions':add_all,
+  'Ad group':all_string,
+  'Currency':currency_string,
+  'ConvRate':all_string,
+  'Clicks':add_all,
+  'Campaign subtype':all_string,
+  'Campaign type':all_string}
 
 app.get('/google/timeline', function (req, res) {
   console.log(req.query.metrics)
@@ -670,14 +699,54 @@ app.get('/google/timeline', function (req, res) {
         var nf=GOOGLE_FIELD_MAP[f]|| f
         if (grouped[nf]) {
           time_hour = new Date(time_hour).valueOf()
-          grouped[nf].push([time_hour, src[f]])
+          if(grouped[nf][time_hour]){
+            grouped[nf][time_hour].push(src[f])
+          }else{
+            grouped[nf][time_hour]=[src[f]]
+          }
+
+          // grouped[nf].push([time_hour, src[f]])
         } else {
-          grouped[nf] = []
+          grouped[nf] = {}
         }
       });
     }
+    
+    // console.log(grouped['CTR'][0])
+    out = {}
+    Object.keys(grouped).forEach(function (f){
+      console.log(f)
+      Object.keys(grouped[f]).forEach(function(day){
+          console.log(day,grouped[f][day],GROUP_BY[f])
+          var reduced_val = GROUP_BY[f](grouped,day,f)
+          console.log(day,reduced_val,grouped[f][day])
+          if(out[f]){
+            out[f].push([day,reduced_val])
+          }else{
+            out[f]=[[day,reduced_val]]
+          }
+      })
+    })
+    
+    var tc=[]
+    out['Clicks'].forEach(function(a){
+      // console.log(a[1]+b[1])
+      tc.push(a[1])
+    })
 
-    res.send(grouped)
+    var ti =[]
+    out['Impressions'].forEach(function(a){
+      // console.log(a[1]+b[1])
+      ti.push(a[1])
+    })
+    tc = tc.reduce(function(a,b){return a+b})
+    ti = ti.reduce(function(a,b){return a+b})
+    console.log('totalclicks ',tc)
+    out['total']={'Clicks':tc,'Impressions':ti,'Ctr':(tc/ti)*100}
+
+    
+    // out['total']['Ctr'] = (out['total']['Clicks'] / out['total']['Impressions'])*100 
+    res.send(out)
 
   }, function (error) { })
 
@@ -698,7 +767,7 @@ app.get('/google/dimensions', function (req, res) {
   }
   else {
     fields = fields = ['Clicks', 'Impressions', 'CTR',
-    'Avg. CPC', 'Cost', 'Conversions', 'Cost / conv.',
+    'Avg. CPC', 'Cost', 'Conversions', 'View-through conv.', 'Cost / conv.',
     'Conv. rate']
   }
 
