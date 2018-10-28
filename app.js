@@ -629,11 +629,11 @@ GOOGLE_FIELD_MAP = {
 var add_all = function(all_data,dateepoch,fielname){ return all_data[fielname][dateepoch].reduce(function(a,b){ return a+b})}
 
 var ctr_group_by_day = function(all_data,dateepoch){
-                    return all_data['Clicks'][dateepoch].reduce(function(a,b){ return a+b})/all_data['Impressions'][dateepoch].reduce(function(a,b){ return a+b})
+                    return (all_data['Clicks'][dateepoch].reduce(function(a,b){ return a+b})/all_data['Impressions'][dateepoch].reduce(function(a,b){ return a+b}))*100
 }
 
 var ctr_per_conv_group_by_day = function(all_data,dateepoch){
-  return all_data['Cost'][dateepoch].reduce(function(a,b){ return a+b})/all_data['Conversions'][dateepoch].reduce(function(a,b){ return a+b})
+  return (all_data['Cost'][dateepoch].reduce(function(a,b){ return a+b})/all_data['Conversions'][dateepoch].reduce(function(a,b){ return a+b}))*100
 }
 
 var all_string = function(item){ return "all"}
