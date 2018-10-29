@@ -808,6 +808,8 @@ app.get('/google/dimensions', function (req, res) {
         var nf=GOOGLE_FIELD_MAP[f]|| f
         response[nf] = data.aggregations[f]
       })
+      response['CTR']['value'] = (response['Clicks']['value']/response['Impressions']['value'])*100
+      // console.log(response['CTR']['value'])
       res.send(response)
 
     }, function (error) { 
