@@ -721,9 +721,9 @@ app.get('/google/timeline', function (req, res) {
           var reduced_val = GROUP_BY[f](grouped,day,f)
           console.log(day,reduced_val,grouped[f][day])
           if(out[f]){
-            out[f].push([int(day),reduced_val])
+            out[f].push([parseInt(day),reduced_val])
           }else{
-            out[f]=[[int(day),reduced_val]]
+            out[f]=[[parseInt(day),reduced_val]]
           }
       })
     })
