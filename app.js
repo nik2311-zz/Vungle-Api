@@ -650,7 +650,7 @@ GROUP_BY = {'CTR':ctr_group_by_day,
   'Conversions':add_all,
   'Ad group':all_string,
   'Currency':currency_string,
-  'ConvRate':all_string,
+  'ConvRate':add_all,
   'Clicks':add_all,
   'Campaign subtype':all_string,
   'Campaign type':all_string}
